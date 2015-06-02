@@ -3,6 +3,7 @@ package com.vertis.formbuilder;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.Expose;
+import com.vertis.formbuilder.Listeners.CustomTextChangeListener;
 import com.vertis.formbuilder.parser.FieldConfig;
 import com.vertis.formbuilder.util.FormBuilderUtil;
 
@@ -50,7 +51,6 @@ public class FullNameXml implements IField {
 	String lastName="";
 	@Expose
 	String fullName="";
-	private Typeface font;
 
 	//constructor to populate config
 	public FullNameXml(FieldConfig fcg){
@@ -63,8 +63,8 @@ public class FullNameXml implements IField {
 	//if focus lost, setValues is called
 	//if focus gained, noErrorMessage is called
 	public void createForm(Activity context) {
-		font = new FormBuilderUtil().getFontFromRes(context);
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		Typeface font = new FormBuilderUtil().getFontFromRes(context);
+		LayoutInflater inflater = context.getLayoutInflater();
 		subForm=(LinearLayout) inflater.inflate(R.layout.fullname,null);
 		headingText = (TextView) subForm.findViewById(R.id.textView1);
 		prefixBox = (Spinner) subForm.findViewById(R.id.spinner1);
@@ -76,6 +76,7 @@ public class FullNameXml implements IField {
 		firstNameTextBox.setTextSize(TypedValue.COMPLEX_UNIT_SP,(float) 14);
 		lastNameTextBox.setTextSize(TypedValue.COMPLEX_UNIT_SP,(float) 14);
 		defineViewSettings(context);
+		addTextChangedListeners();
 		setViewValues();
 		mapView();
 		setValues();
@@ -94,7 +95,7 @@ public class FullNameXml implements IField {
 	private ArrayList<SelectElement> getPrefixList(Context context) {
 		int i=0;
 		String[] prefixes = context.getResources().getStringArray(R.array.prefixArray);
-		ArrayList<SelectElement> prefixArr=new ArrayList<SelectElement>();
+		ArrayList<SelectElement> prefixArr= new ArrayList<>();
 		for (String string : prefixes) 
 			prefixArr.add(new SelectElement(i, string, string));
 		return prefixArr;
@@ -183,14 +184,14 @@ public class FullNameXml implements IField {
 		if(headingText==null)return;
 		headingText.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
 		headingText.setText(headingText.getText() + " " + message);
-		headingText.setTextColor(-65536);
+		headingText.setTextColor(headingText.getContext().getResources().getColor(R.color.Red));
 	}
 
 	@SuppressLint("ResourceAsColor")
 	public void noErrorMessage(){
 		if(headingText==null)return;
 		headingText.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
-		headingText.setTextColor(R.color.TextViewNormal);
+		headingText.setTextColor(headingText.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	public String getCIDValue() {
@@ -213,20 +214,10 @@ public class FullNameXml implements IField {
 	}
 
 	public boolean validateDisplay(String value,String condition) {
-		if(condition.equals("equals")){
-			if(fullName.toLowerCase().contains(value.toLowerCase()) || fullName.trim().equals("")){
-				return true;
-			}
-			return false;
-		}
-		return true;
+		return !condition.equals("equals") || fullName.toLowerCase().contains(value.toLowerCase()) || fullName.trim().equals("");
 	}
 
-    public boolean isHidden(){
-        if(subForm!=null) {
-            return !subForm.isShown();
-        } else {
-            return false;
-        }
-    }
-};
+    public boolean isHidden() {
+		return subForm != null && !subForm.isShown();
+	}
+}

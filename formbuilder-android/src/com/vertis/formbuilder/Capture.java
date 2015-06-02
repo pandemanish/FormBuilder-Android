@@ -39,7 +39,7 @@ public class Capture implements IField{
 	TextView tvCapture;
 	Button buttonCaptureImage, buttonCaptureVideo, buttonCaptureAudio;
 	ArrayAdapter<String> contentAdapter;
-	ArrayList<String> captureList= new ArrayList<String>();
+	ArrayList<String> captureList= new ArrayList<>();
 	ListView lvCapture;
 
 	//Values
@@ -57,7 +57,7 @@ public class Capture implements IField{
 	@Override
 	public void createForm(final Activity context) {
 		this.context = context;
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		LayoutInflater inflater =context.getLayoutInflater();
 		llCapture=(LinearLayout) inflater.inflate(R.layout.capture,null);
 		tvCapture = (TextView) llCapture.findViewById(R.id.textViewCapture);
 		buttonCaptureImage=(Button) llCapture.findViewById(R.id.buttonImage);
@@ -138,7 +138,7 @@ public class Capture implements IField{
 	private void noErrorMessage() {
 		if(tvCapture==null)return;
 		tvCapture.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
-		tvCapture.setTextColor(R.color.TextViewNormal);
+		tvCapture.setTextColor(tvCapture.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	private void mapView() {
@@ -178,7 +178,7 @@ public class Capture implements IField{
 		if(tvCapture==null)return;
 		tvCapture.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
 		tvCapture.setText(tvCapture.getText() + message);
-		tvCapture.setTextColor(R.color.ErrorMessage);
+		tvCapture.setTextColor(tvCapture.getContext().getResources().getColor(R.color.ErrorMessage));
 	}
 
 	@Override
@@ -218,21 +218,13 @@ public class Capture implements IField{
 
 	public boolean validateDisplay(String value,String condition) {
 		if(condition.equals("equals")) {
-			for (String capture : captureList) {
-				if (capture.equals(value)) {
-					return true;
-				}
-			}
+			for (String capture : captureList) if (capture.equals(value)) return true;
 			return false;
 		}
 		return true;
 	}
 
-    public boolean isHidden(){
-        if(llCapture!=null) {
-            return !llCapture.isShown();
-        } else {
-            return false;
-        }
-    }
+    public boolean isHidden() {
+		return llCapture != null && !llCapture.isShown();
+	}
 }

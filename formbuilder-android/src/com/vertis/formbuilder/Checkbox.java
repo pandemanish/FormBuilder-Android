@@ -15,9 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Checkbox implements IField {
 
@@ -25,16 +28,14 @@ public class Checkbox implements IField {
 	// Views
 	LinearLayout llCheckBox;
 	TextView tvCheckBox;
-	EditText otherTextBox;
-	ArrayList<String> checkedValues= new ArrayList<String>(); 
-	ArrayList<CheckBox> cbValues = new ArrayList<CheckBox>();
+	ArrayList<String> checkedValues= new ArrayList<>();
+	ArrayList<CheckBox> cbValues = new ArrayList<>();
 
 	//Values
 	@Expose
 	String cid;
 	@Expose
 	String optionSelected;
-	int checked = 0;
 	@Expose
 	String other;
 
@@ -44,12 +45,12 @@ public class Checkbox implements IField {
 
 	@Override
 	public void createForm(Activity context) {
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		LayoutInflater inflater = context.getLayoutInflater();
 		llCheckBox=(LinearLayout) inflater.inflate(R.layout.checkbox,null);
 		tvCheckBox = (TextView) llCheckBox.findViewById(R.id.tvCheckbox);
 		tvCheckBox.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
 		tvCheckBox.setTypeface(new FormBuilderUtil().getFontFromRes(context));
-		int i = 0;
+		int i ;
 		if(cbValues != null)
 			cbValues.clear();
 		for (i = 0; i < this.config.getField_options().getOptions().size(); i++) {
@@ -118,29 +119,37 @@ public class Checkbox implements IField {
 	private void noErrorMessage() {
 		if(tvCheckBox==null)return;
 		tvCheckBox.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
-		tvCheckBox.setTextColor(R.color.TextViewNormal);		
+		tvCheckBox.setTextColor(tvCheckBox.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	@SuppressLint("ResourceAsColor")
 	private void errorMessage(String message) {
 		if(tvCheckBox==null)return;
 		tvCheckBox.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
-//		tvCheckBox.setText(tvCheckBox.getText() + " " + message);
-		tvCheckBox.setTextColor(R.color.ErrorMessage);
+		tvCheckBox.setText(tvCheckBox.getText() + " " + message);
+		tvCheckBox.setTextColor(tvCheckBox.getContext().getResources().getColor(R.color.ErrorMessage));
 	}
 
 	@Override
 	public void setValues() {
-		this.cid=config.getCid();
-		if(llCheckBox!=null){
-			checkedValues.clear();
-			for (CheckBox tempCheck : cbValues) {
-				if(tempCheck.isChecked()){
-					checkedValues.add(tempCheck.getText().toString());
+		try {
+			this.cid=config.getCid();
+			JSONArray jsonArray = new JSONArray();
+			if(llCheckBox!=null){
+				checkedValues.clear();
+				for (CheckBox tempCheck : cbValues) {
+					if (tempCheck.isChecked())
+						checkedValues.add(tempCheck.getText().toString());
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put(tempCheck.getText().toString(), tempCheck.isChecked());
+					jsonArray.put(jsonObject);
 				}
 			}
+			validate();
+			optionSelected = jsonArray.toString();
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
-		validate();
 	}
 
 	@Override
@@ -172,20 +181,14 @@ public class Checkbox implements IField {
 	@Override
 	public boolean validateDisplay(String value,String condition) {
 		if(condition.equals("equals")){
-			for (String checkedValue : checkedValues) {
-				if(checkedValue.toLowerCase().equals(value.toLowerCase())){
-				}
-			}
+			for (String checkedValue : checkedValues)
+				if (checkedValue.toLowerCase().equals(value.toLowerCase())) return true;
 			return false;
 		}
 		return true;
 	}
 
-    public boolean isHidden(){
-        if(llCheckBox!=null) {
-            return !llCheckBox.isShown();
-        } else {
-            return false;
-        }
-    }
+    public boolean isHidden() {
+		return llCheckBox != null && !llCheckBox.isShown();
+	}
 }

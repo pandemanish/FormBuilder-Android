@@ -1,6 +1,7 @@
 package com.vertis.formbuilder;
 
 import com.google.gson.annotations.Expose;
+import com.vertis.formbuilder.Listeners.CustomTextChangeListener;
 import com.vertis.formbuilder.parser.FieldConfig;
 import com.vertis.formbuilder.util.FormBuilderUtil;
 
@@ -20,7 +21,6 @@ public class Price implements IField {
 
 	//config contains all data from json ie id,sid,label,field_options
 	private FieldConfig config;
-	private Typeface font;
 
 	public Price(FieldConfig fcg){
 		this.config=fcg;
@@ -49,8 +49,8 @@ public class Price implements IField {
 
 	@Override
 	public void createForm(Activity context) {
-		font = new FormBuilderUtil().getFontFromRes(context);
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		Typeface font = new FormBuilderUtil().getFontFromRes(context);
+		LayoutInflater inflater = context.getLayoutInflater();
 		llPrice=(LinearLayout) inflater.inflate(R.layout.price,null);
 		tvPrice = (TextView) llPrice.findViewById(R.id.textViewPrice);
 		etDollars = (EditText) llPrice.findViewById(R.id.dollars);
@@ -64,7 +64,7 @@ public class Price implements IField {
 		
 		addTextChangeListeners();
 		
-		defineViewSettings(context);
+		defineViewSettings();
 		setViewValues();
 		mapView();
 		setValues();
@@ -80,7 +80,7 @@ public class Price implements IField {
 	private void noErrorMessage() {
 		if(tvPrice==null)return;
 		tvPrice.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
-		tvPrice.setTextColor(R.color.TextViewNormal);
+		tvPrice.setTextColor(tvPrice.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	private void mapView() {
@@ -96,7 +96,7 @@ public class Price implements IField {
 		etCents.setText(cents);
 	}
 
-	private void defineViewSettings(Activity context) {
+	private void defineViewSettings() {
 		etDollars.setHint(dollarsHint);
 		etDollars.setOnFocusChangeListener( new OnFocusChangeListener() {
 			@Override
@@ -146,7 +146,7 @@ public class Price implements IField {
 		if(tvPrice==null)return;
 		tvPrice.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
 		tvPrice.setText(tvPrice.getText() + " " + message);
-		tvPrice.setTextColor(-65536);
+		tvPrice.setTextColor(tvPrice.getContext().getResources().getColor(R.color.ErrorMessage));
 	}
 
 	@Override
@@ -189,27 +189,27 @@ public class Price implements IField {
 	}
 
 	public boolean validateDisplay(String value,String condition) {
-		if(condition.equals("equals")){
-			if(totalPrice.equals(value) || totalPrice.equals("")){
-				return true;
-			}
-		} else if(condition.equals("is greater than")){
-			if(Integer.parseInt(totalPrice)>Integer.parseInt(value) || totalPrice.equals("")){
-				return true;
-			}
-		} else if(condition.equals("is less than")){
-			if(Integer.parseInt(totalPrice)<Integer.parseInt(value) || totalPrice.equals("")){
-				return true;
-			}
+		switch (condition) {
+			case "equals":
+				if (totalPrice.equals(value) || totalPrice.equals("")) {
+					return true;
+				}
+				break;
+			case "is greater than":
+				if (Integer.parseInt(totalPrice) > Integer.parseInt(value) || totalPrice.equals("")) {
+					return true;
+				}
+				break;
+			case "is less than":
+				if (Integer.parseInt(totalPrice) < Integer.parseInt(value) || totalPrice.equals("")) {
+					return true;
+				}
+				break;
 		}
 		return false;
 	}
 
-    public boolean isHidden(){
-        if(llPrice!=null) {
-            return !llPrice.isShown();
-        } else {
-            return false;
-        }
-    }
+    public boolean isHidden() {
+		return llPrice != null && !llPrice.isShown();
+	}
 }

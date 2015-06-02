@@ -4,10 +4,10 @@ import java.util.HashMap;
 import android.view.View;
 
 public class ViewLookup {
-	static HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+	static HashMap<String, Integer> hashMap = new HashMap<>();
 	
 	public static void mapField(String stringId,View field){
-		int intId=View.generateViewId();
+		int intId = View.generateViewId();
 		field.setId(intId);
 		hashMap.put(stringId, intId);	
 	}

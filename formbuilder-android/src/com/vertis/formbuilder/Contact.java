@@ -3,7 +3,7 @@ package com.vertis.formbuilder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.vertis.formbuilder.Listeners.TextChangeListener;
+import com.vertis.formbuilder.Listeners.CustomTextChangeListener;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Typeface;
@@ -44,17 +44,14 @@ public class Contact implements IField{
 	@Override
 	public void createForm(Activity context) {
 		font = new FormBuilderUtil().getFontFromRes(context);
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		LayoutInflater inflater = context.getLayoutInflater();
 		llContact=(LinearLayout) inflater.inflate(R.layout.contact,null);
 		tvContact = (TextView) llContact.findViewById(R.id.textViewContact);
 		etContact = (EditText) llContact.findViewById(R.id.editTextContact);
 		setTextTypefaseAndTextSize(etContact, 12.5f);
 		setTextTypefaseAndTextSize(tvContact, 14);
-		tvContact.setTextColor(R.color.TextViewNormal);
-		
-		etContact.addTextChangedListener(new TextChangeListener(config));
-		
-		defineViewSettings(context);
+		etContact.addTextChangedListener(new CustomTextChangeListener(config));
+		defineViewSettings();
 		setViewValues();
 		mapView();
 		setValues();
@@ -70,7 +67,7 @@ public class Contact implements IField{
 	private void noErrorMessage() {
 		if(tvContact==null)return;
 		tvContact.setText(this.config.getLabel() + (this.config.getRequired() ? "*" : ""));
-		tvContact.setTextColor(R.color.TextViewNormal);
+		tvContact.setTextColor(tvContact.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	@SuppressLint("ResourceAsColor")
@@ -78,7 +75,7 @@ public class Contact implements IField{
 		if(tvContact==null)return;
 		tvContact.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
 		tvContact.setText(tvContact.getText() + message);
-		tvContact.setTextColor(R.color.ErrorMessage);
+		tvContact.setTextColor(tvContact.getContext().getResources().getColor(R.color.ErrorMessage));
 	}
 
 	private void mapView() {
@@ -92,7 +89,7 @@ public class Contact implements IField{
 		tvContact.setTextColor(-1);
 	}
 
-	private void defineViewSettings(Activity context) {
+	private void defineViewSettings() {
 		etContact.setOnFocusChangeListener(new OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -169,20 +166,10 @@ public class Contact implements IField{
 	}
 
 	public boolean validateDisplay(String value,String condition) {
-		if(condition.equals("equals")){
-			if(contactNo.equals(value) || contactNo.equals("")){
-				return true;
-			}
-			return false;
-		}
-		return false;
+		return condition.equals("equals") && (contactNo.equals(value) || contactNo.equals(""));
 	}
 
-    public boolean isHidden(){
-        if(llContact!=null) {
-            return !llContact.isShown();
-        } else {
-            return false;
-        }
-    }
+    public boolean isHidden() {
+		return llContact != null && !llContact.isShown();
+	}
 }

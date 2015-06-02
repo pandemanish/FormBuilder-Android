@@ -1,10 +1,9 @@
 package com.vertis.formbuilder;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.vertis.formbuilder.Listeners.TextChangeListener;
+import com.vertis.formbuilder.Listeners.CustomTextChangeListener;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Typeface;
@@ -29,14 +28,12 @@ public class Email implements IField{
 	LinearLayout em;
 	TextView emailTextBox;
 	EditText emailEditBox;
-	ArrayList Conditions;
 
 	//Values
 	@Expose
 	String cid;
 	@Expose
 	String emailid="";
-	private Typeface font;
 
 	public Email(FieldConfig fcg){
 		this.config=fcg;
@@ -45,8 +42,8 @@ public class Email implements IField{
 	@SuppressLint("ResourceAsColor")
 	@Override
 	public void createForm(Activity context) {
-		font = new FormBuilderUtil().getFontFromRes(context);
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		Typeface font = new FormBuilderUtil().getFontFromRes(context);
+		LayoutInflater inflater = context.getLayoutInflater();
 		em=(LinearLayout) inflater.inflate(R.layout.email,null);
 		emailTextBox = (TextView) em.findViewById(R.id.textViewEmail);
 		emailEditBox = (EditText) em.findViewById(R.id.editTextEmail);
@@ -54,11 +51,8 @@ public class Email implements IField{
 		emailTextBox.setTypeface(font);
 		emailEditBox.setTextSize(TypedValue.COMPLEX_UNIT_SP,(float) 12.5);
 		emailTextBox.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-		emailTextBox.setTextColor(R.color.TextViewNormal);
-		
-		emailEditBox.addTextChangedListener(new TextChangeListener(config));
-		
-		defineViewSettings(context);
+		emailEditBox.addTextChangedListener(new CustomTextChangeListener(config));
+		defineViewSettings();
 		setViewValues();
 		mapView();
 		setValues();
@@ -69,7 +63,7 @@ public class Email implements IField{
 	private void noErrorMessage() {
 		if(emailTextBox==null)return;
 		emailTextBox.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
-		emailTextBox.setTextColor(R.color.TextViewNormal);
+		emailTextBox.setTextColor(emailTextBox.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	private void mapView() {
@@ -83,7 +77,7 @@ public class Email implements IField{
 		emailTextBox.setTextColor(-1);
 	}
 
-	private void defineViewSettings(Activity context) {
+	private void defineViewSettings() {
 		emailEditBox.setOnFocusChangeListener( new OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -128,7 +122,7 @@ public class Email implements IField{
 		if(emailTextBox==null)return;
 		emailTextBox.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
 		emailTextBox.setText(emailTextBox.getText() + message);
-		emailTextBox.setTextColor(R.color.ErrorMessage);
+		emailTextBox.setTextColor(emailTextBox.getContext().getResources().getColor(R.color.ErrorMessage));
 	}
 
 	@Override
@@ -168,20 +162,10 @@ public class Email implements IField{
 	}
 
 	public boolean validateDisplay(String value,String condition) {
-		if(condition.equals("equals")){
-			if(emailid.equals(value) || emailid.equals("")){
-				return true;
-			}
-			return false;
-		}
-		return true;
+		return !condition.equals("equals") || emailid.equals(value) || emailid.equals("");
 	}
 
-    public boolean isHidden(){
-        if(em!=null) {
-            return !em.isShown();
-        } else {
-            return false;
-        }
-    }
+    public boolean isHidden() {
+		return em != null && !em.isShown();
+	}
 }

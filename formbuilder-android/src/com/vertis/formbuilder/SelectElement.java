@@ -1,5 +1,7 @@
 package com.vertis.formbuilder;
 
+import android.support.annotation.NonNull;
+
 public class SelectElement implements Comparable<SelectElement> {
 	@Override
 	public String toString() {
@@ -34,9 +36,6 @@ public class SelectElement implements Comparable<SelectElement> {
 	@Override
 	public boolean equals(Object o) {
 		SelectElement element = (SelectElement) o;
-		if (value.equals(element.value)) {
-			return true;
-		}
-		return false;
+		return value.equals(element.value);
 	}
 }

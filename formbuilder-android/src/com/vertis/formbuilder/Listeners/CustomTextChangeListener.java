@@ -1,9 +1,11 @@
-package com.vertis.formbuilder;
+package com.vertis.formbuilder.Listeners;
 
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.vertis.formbuilder.FormBuilder;
+import com.vertis.formbuilder.IField;
 import com.vertis.formbuilder.parser.FieldConfig;
 
 import android.text.Editable;
@@ -12,7 +14,7 @@ import android.text.TextWatcher;
 public class CustomTextChangeListener implements TextWatcher  {
 	private FieldConfig config;
 
-	CustomTextChangeListener(FieldConfig config){
+	public CustomTextChangeListener(FieldConfig config){
 		this.config = config;
 	}
 	/* Other methods protected by singleton-ness */

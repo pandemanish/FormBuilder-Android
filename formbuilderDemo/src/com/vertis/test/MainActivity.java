@@ -11,15 +11,13 @@ import java.lang.reflect.InvocationTargetException;
 import com.vertis.formbuilder.FormBuilder;
 
 public class MainActivity extends Activity {
-	private String result;
 	FormBuilder formBuilder = new FormBuilder();
-	private LinearLayout form;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		form=(LinearLayout)findViewById(R.id.Lay1);
+		LinearLayout form=(LinearLayout)findViewById(R.id.Lay1);
 		//String jsonstr =  "{\"fields\":[" +
 		//				"{\"label\":\"Full Name\", \"field_type\":\"fullnamexml\", \"required\":true, \"field_options\":{}, \"conditions\":[], \"cid\":\"c26\"}" +
 		//				",{\"label\":\"Untitled\", \"field_type\":\"section_break\", \"required\":false, \"field_options\":{}, \"conditions\":[], \"cid\":\"c28\",\"section_id\":100}" +
@@ -62,11 +60,11 @@ public class MainActivity extends Activity {
 	}
 	/**
 	 * link submit button to submit function of the formbuilder
-	 * @param button
+	 * @param button on which user has clicked
 	 */
 	public void submit(View button) {
-		this.result= formBuilder.submit();
-		Toast.makeText(this, this.result, Toast.LENGTH_LONG).show();
+		String result= formBuilder.submit();
+		Toast.makeText(this, result, Toast.LENGTH_LONG).show();
 	}
 
 	public void save(View button) {

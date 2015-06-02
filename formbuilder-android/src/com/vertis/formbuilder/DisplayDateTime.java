@@ -1,13 +1,7 @@
 package com.vertis.formbuilder;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -15,8 +9,6 @@ import java.util.TimeZone;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.res.Resources.NotFoundException;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -29,8 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.vertis.formbuilder.parser.FieldConfig;
 import com.vertis.formbuilder.util.FormBuilderUtil;
@@ -53,7 +43,6 @@ public class DisplayDateTime implements IField {
 	@Expose
 	String dateTimeToRetainValue="";
 	private Activity context;
-	private Typeface font;
 
 	public DisplayDateTime(FieldConfig fcg){
 		this.config=fcg;
@@ -63,13 +52,12 @@ public class DisplayDateTime implements IField {
 	@Override
 	public void createForm(Activity context) {
 		this.context = context;
-		font = new FormBuilderUtil().getFontFromRes(context);
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		Typeface font = new FormBuilderUtil().getFontFromRes(context);
+		LayoutInflater inflater = context.getLayoutInflater();
 		llDisplayDateTime=(LinearLayout) inflater.inflate(R.layout.display_date_time, null);
 		showTextDateTime = (TextView) llDisplayDateTime.findViewById(R.id.showTextDateTime);
 		tvDateTime=(TextView) llDisplayDateTime.findViewById(R.id.tvErrorMessage);
 		datetime = config.getField_options().getExistingFieldValue();
-		tvDateTime.setTextColor(R.color.TextViewNormal);
 		showTextDateTime.setTextSize(TypedValue.COMPLEX_UNIT_SP, (float) 12.5);
 		tvDateTime.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
 		tvDateTime.setTypeface(font);
@@ -92,8 +80,7 @@ public class DisplayDateTime implements IField {
 						datetime);
 			}
 		});
-
-		defineViewSettings(context);
+		defineViewSettings();
 		setViewValues();
 		mapView();
 		setValues();
@@ -109,7 +96,7 @@ public class DisplayDateTime implements IField {
 	private void noErrorMessage() {
 		if(tvDateTime==null)return;
 		tvDateTime.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
-		tvDateTime.setTextColor(R.color.TextViewNormal);
+		tvDateTime.setTextColor(tvDateTime.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	private void setViewValues() {
@@ -118,7 +105,7 @@ public class DisplayDateTime implements IField {
 		tvDateTime.setTextColor(-1);
 	}
 
-	private void defineViewSettings(Activity context) {
+	private void defineViewSettings() {
 		showTextDateTime.setOnFocusChangeListener( new OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -152,7 +139,7 @@ public class DisplayDateTime implements IField {
 		if(tvDateTime==null)return;
 		tvDateTime.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
 		tvDateTime.setText(tvDateTime.getText() + message);
-		tvDateTime.setTextColor(R.color.ErrorMessage);
+		tvDateTime.setTextColor(tvDateTime.getContext().getResources().getColor(R.color.ErrorMessage));
 	}
 
 	@Override
@@ -273,27 +260,27 @@ public class DisplayDateTime implements IField {
 	}
 
 	public boolean validateDisplay(String value,String condition) {
-		if(condition.equals("equals")){
-			if(datetime.equals(value) || datetime.equals("")){
-				return true;
-			}
-		} else if(condition.equals("is greater than")){
-			if(Integer.parseInt(datetime)>Integer.parseInt(value) || datetime.equals("")){
-				return true;
-			}
-		} else if(condition.equals("is less than")){
-			if(Integer.parseInt(datetime)<Integer.parseInt(value) || datetime.equals("")){
-				return true;
-			}
+		switch (condition) {
+			case "equals":
+				if (datetime.equals(value) || datetime.equals("")) {
+					return true;
+				}
+				break;
+			case "is greater than":
+				if (Integer.parseInt(datetime) > Integer.parseInt(value) || datetime.equals("")) {
+					return true;
+				}
+				break;
+			case "is less than":
+				if (Integer.parseInt(datetime) < Integer.parseInt(value) || datetime.equals("")) {
+					return true;
+				}
+				break;
 		}
 		return false;
 	}
 
-    public boolean isHidden(){
-        if(llDisplayDateTime!=null) {
-            return !llDisplayDateTime.isShown();
-        } else {
-            return false;
-        }
-    }
+    public boolean isHidden() {
+		return llDisplayDateTime != null && !llDisplayDateTime.isShown();
+	}
 }

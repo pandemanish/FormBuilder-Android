@@ -20,13 +20,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.annotations.Expose;
+import com.vertis.formbuilder.Listeners.CustomTextChangeListener;
 import com.vertis.formbuilder.parser.FieldConfig;
 import com.vertis.formbuilder.util.FormBuilderUtil;
 
 public class Address implements IField {
 
 	private FieldConfig config;
-
 	//Views
 	LinearLayout ad;
 	EditText streetEditText;
@@ -40,25 +40,24 @@ public class Address implements IField {
 	Spinner countriesSpinner;
 	TextView countryTextView;
 	TextView title;
-
 	//Values
 	@Expose
 	String cid;
-	@Expose
-	String country="";
-	int countryPosition=0;
-	@Expose
-	String street="";
-	@Expose
-	String city="";
-	@Expose
-	String state="";
-	@Expose
-	String zip="";
-	
-	String fullAddress="";
-	private Typeface mFont;
 
+	@Expose
+	String country = "";
+	int countryPosition = 0;
+	@Expose
+	String street = "";
+	@Expose
+	String city = "";
+	@Expose
+	String state = "";
+	@Expose
+	String zip = "";
+	String fullAddress = "";
+
+	private Typeface mFont;
 	//constructor to populate config
 	public Address(FieldConfig fcg){
 		this.config=fcg;
@@ -69,6 +68,7 @@ public class Address implements IField {
 		mFont = new FormBuilderUtil().getFontFromRes(context);
 		getViesByID(context);
 		setTextSizeAndTypeFace();
+		addTextChangeListeners();
 		defineViewSettings(context);
 		setViewValues();
 		mapView();
@@ -165,6 +165,7 @@ public class Address implements IField {
 		ViewLookup.mapField(this.config.getCid() + "_1_4", zipEditText);
 		ViewLookup.mapField(this.config.getCid() + "_1_5", countriesSpinner);
 	}
+
 	private void setViewValues() {
 		title.setText(this.config.getLabel() + (this.config.getRequired() ? "*" : ""));
 		streetEditText.setText(street);
@@ -173,10 +174,9 @@ public class Address implements IField {
 		zipEditText.setText(zip);
 		countriesSpinner.setSelection(countryPosition);
 	}
-
 	private ArrayList<SelectElement> getCountryList() {
 		Locale[] locale = Locale.getAvailableLocales();
-		ArrayList<SelectElement> countries = new ArrayList<SelectElement>();
+		ArrayList<SelectElement> countries = new ArrayList<>();
 		String country;
 		int i = 0;
 		for (Locale loc : locale) {
@@ -188,7 +188,7 @@ public class Address implements IField {
 							.getDisplayCountry(), 1));
 				}
 			}
-			i = i++;
+			i++;
 		}
 		Collections.sort(countries);
 		return countries;
@@ -218,29 +218,19 @@ public class Address implements IField {
 		return valid;
 	}
 
-	private boolean checkEmpty(TextView view, String street, String errorMessage) {
-		if(config.getRequired() && street.equals("")){
-			errorMessage(view, errorMessage);
-			return false;
-		}  else{
-			noErrorMessage(view);
-			return true;
-		}
-	}
-
 	@SuppressLint("ResourceAsColor")
 	private void errorMessage(TextView view ,String message) {
 		if(view==null)return;
 		view.setText((this.config.getRequired()?"*":"") );
 		view.setText(view.getText() + message);
-		view.setTextColor(R.color.ErrorMessage);
+		view.setTextColor(view.getContext().getResources().getColor(R.color.ErrorMessage));
 	}
 
 	@SuppressLint("ResourceAsColor")
 	private void noErrorMessage(TextView view ) {
 		if(view==null)return;
 		view.setText(this.config.getRequired()?"Street*":"" );
-		view.setTextColor(R.color.TextViewNormal);
+		view.setTextColor(view.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	@Override
@@ -295,20 +285,20 @@ public class Address implements IField {
 	}
 
 	public boolean validateDisplay(String value,String condition) {
-		if(condition.equals("equals")){
-			if(fullAddress.toLowerCase().contains(value.toLowerCase()) || fullAddress.trim().equals("")){
-				return true;
-			}
-			return false;
-		}
-		return true;
+		return !condition.equals("equals") || fullAddress.toLowerCase().contains(value.toLowerCase()) || fullAddress.trim().equals("");
 	}
 
-    public boolean isHidden(){
-        if(ad!=null) {
-            return !ad.isShown();
-        } else {
-            return false;
-        }
-    }
+    public boolean isHidden() {
+		return ad != null && !ad.isShown();
+	}
+
+	private boolean checkEmpty(TextView view, String actual_value, String errorMessage) {
+		if(config.getRequired() && actual_value.equals("")){
+			errorMessage(view, errorMessage);
+			return false;
+		} else{
+			noErrorMessage(view);
+			return true;
+		}
+	}
 }

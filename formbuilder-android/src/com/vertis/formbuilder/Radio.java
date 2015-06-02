@@ -18,8 +18,7 @@ import android.widget.TextView;
 
 class Radio implements IField {
 	private FieldConfig config;
-	// Default Values 
-	boolean otherRequired = true;
+
 	String otherHeading = "";
 	// Views
 	LinearLayout subForm;
@@ -39,7 +38,7 @@ class Radio implements IField {
 	}
 
 	public void createForm(Activity context) {
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		LayoutInflater inflater = context.getLayoutInflater();
 		subForm=(LinearLayout) inflater.inflate(R.layout.radio,null);
 		headingText = (TextView) subForm.findViewById(R.id.tvRadio);
 		otherHeading="other";	
@@ -55,7 +54,7 @@ class Radio implements IField {
 				subForm.requestFocus();
 			}
 		});
-		int i = 0;
+		int i ;
 		for (i = 0; i < this.config.getField_options().getOptions().size(); i++) {
 			addButton(i, context);
 		}		
@@ -121,14 +120,14 @@ class Radio implements IField {
 		if(headingText==null)return;
 		headingText.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
 		headingText.setText(headingText.getText() + " " + message);
-		headingText.setTextColor(R.color.ErrorMessage);
+		headingText.setTextColor(headingText.getContext().getResources().getColor(R.color.ErrorMessage));
 	}
 
 	@SuppressLint("ResourceAsColor")
 	public void noErrorMessage(){
 		if(headingText==null)return;
 		headingText.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
-		headingText.setTextColor(R.color.TextViewNormal);
+		headingText.setTextColor(headingText.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 	@Override
 	public void clearViews() {
@@ -158,20 +157,10 @@ class Radio implements IField {
 	}
 
 	public boolean validateDisplay(String value,String condition) {
-		if(condition.equals("equals")){
-			if(optionSelected.toLowerCase().equals(value.toLowerCase()) || optionSelected.equals("")){
-				return true;
-			}
-			return false;
-		}
-		return true;
+		return !condition.equals("equals") || optionSelected.toLowerCase().equals(value.toLowerCase()) || optionSelected.equals("");
 	}
 
-    public boolean isHidden(){
-        if(subForm!=null) {
-            return !subForm.isShown();
-        } else {
-            return false;
-        }
-    }
-};
+    public boolean isHidden() {
+		return subForm != null && !subForm.isShown();
+	}
+}

@@ -29,18 +29,18 @@ public class FormBuilder {
      * (section id mapped to all views in that section )
      * currentSection stores section id of the section currently displayed
      */
-    public static TreeMap<Integer,ArrayList<IField>> fields = new TreeMap<Integer, ArrayList<IField>>();
+    public static TreeMap<Integer,ArrayList<IField>> fields = new TreeMap<>();
     /**
      *  Form is the linearLayout containing various section breaks.
      *  These section breaks will contain various fields.
      *  the fields context will be taken from the constructor
      */
-    public static TreeMap<Integer,Section> sectionsTreeMap= new TreeMap<Integer,Section>();
+    public static TreeMap<Integer,Section> sectionsTreeMap= new TreeMap<>();
     LinearLayout previousNextContainer;
     Button previousButton;
     Button nextButton;
     public FormBuilder() {
-        fields =  new TreeMap<Integer, ArrayList<IField>>();
+        fields =  new TreeMap<>();
     }
 
     public void setup(String json , LinearLayout form, Activity context) throws NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
@@ -85,7 +85,7 @@ public class FormBuilder {
             form.addView(this.previousNextContainer);
         } else{
             //No section break=>no previous/next buttons
-            View v = this.sectionsTreeMap.get(0).getView();
+            View v = sectionsTreeMap.get(0).getView();
             //render generates the required views(from json) and adds the required views to linearlayout passed to the functions
             this.render(0);
             form.addView(v);
@@ -94,7 +94,7 @@ public class FormBuilder {
 
     private void loopOverSectionTreeMap(LinearLayout form) {
         for (int i = 0; i < sectionsTreeMap.size() ; i++) {
-            View v = this.sectionsTreeMap.get(i).getView();
+            View v = sectionsTreeMap.get(i).getView();
             v.setVisibility(View.GONE);
             this.render(i);
             form.addView(v);
@@ -127,7 +127,7 @@ public class FormBuilder {
         this.previousNextContainer.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams abc =  new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         abc.setMargins(0, 10, 0, 10);
-        this.previousNextContainer.setGravity(Gravity.RIGHT);
+        this.previousNextContainer.setGravity(Gravity.END);
         this.previousNextContainer.setLayoutParams(abc);
         this.nextButton=new Button(context);
         this.nextButton.setText("Next");
@@ -165,14 +165,6 @@ public class FormBuilder {
         }
     }
 
-    //delete all views currently displayed after saving their data(done by clearViews)
-    public void clear(int sectionId){
-        for(IField field : fields.get(sectionId)){
-            field.clearViews();
-        }
-        //form_section.removeAllViews();
-    }
-
     //Submit works only if you are in the last section and all fields are valid
     //returns output json which is {values:[array of json objects from field.toJson ]}
     public String submit(){
@@ -185,7 +177,7 @@ public class FormBuilder {
                 return "Not ready to submit!!!";
         }
         ResultJson rj = new ResultJson();
-        for (ArrayList<IField> fieldList: this.fields.values()) {
+        for (ArrayList<IField> fieldList: fields.values()) {
             for(IField field:fieldList){
                 field.setValues();
                 rj.addValue(field);

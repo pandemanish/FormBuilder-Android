@@ -6,7 +6,7 @@ import com.google.gson.annotations.Expose;
 
 public class ResultJson {
 	@Expose
-	ArrayList<Object> values = new ArrayList<Object>();
+	ArrayList<Object> values = new ArrayList<>();
 	public void addValue(Object value){
 		this.values.add(value);
 	}

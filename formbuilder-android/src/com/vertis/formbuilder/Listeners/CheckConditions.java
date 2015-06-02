@@ -25,7 +25,7 @@ public class CheckConditions {
     }
 
     public void checkCondition(String source, String condition, String value, String action, String target, Boolean isSource) {
-        String actualValue="";
+        String actualValue ="";
         IField sourceField = getFieldFromCID(source);
         IField targetField = getFieldFromCID(target);
 

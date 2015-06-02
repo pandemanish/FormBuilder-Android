@@ -1,6 +1,6 @@
 package com.vertis.formbuilder;
 
-import com.vertis.formbuilder.Listeners.TextChangeListener;
+import com.vertis.formbuilder.Listeners.CustomTextChangeListener;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Typeface;
@@ -30,7 +30,6 @@ public class MultiLineEditText implements IField{
 	String cid;
 	@Expose
 	String mtext="";
-	private Typeface font;
 
 	public MultiLineEditText(FieldConfig fcg){
 		this.config=fcg;
@@ -39,8 +38,8 @@ public class MultiLineEditText implements IField{
 	@SuppressLint("ResourceAsColor")
 	@Override
 	public void createForm(Activity context) {
-		font = new FormBuilderUtil().getFontFromRes(context);
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		Typeface font = new FormBuilderUtil().getFontFromRes(context);
+		LayoutInflater inflater = context.getLayoutInflater();
 		llEditText=(LinearLayout) inflater.inflate(R.layout.multiline_edit_text,null);
 		tvEditText = (TextView) llEditText.findViewById(R.id.multilineTextView);
 		etEditText = (EditText) llEditText.findViewById(R.id.multilineEditText);
@@ -48,11 +47,8 @@ public class MultiLineEditText implements IField{
 		tvEditText.setTypeface(font);
 		etEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP,(float) 12.5);
 		tvEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-		tvEditText.setTextColor(R.color.TextViewNormal);
-		
-		etEditText.addTextChangedListener(new TextChangeListener(config));
-		
-		defineViewSettings(context);
+		etEditText.addTextChangedListener(new CustomTextChangeListener(config));
+		defineViewSettings();
 		setViewValues();
 		mapView();
 		setValues();
@@ -63,7 +59,7 @@ public class MultiLineEditText implements IField{
 	private void noErrorMessage() {
 		if(tvEditText==null)return;
 		tvEditText.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
-		tvEditText.setTextColor(R.color.TextViewNormal);
+		tvEditText.setTextColor(tvEditText.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	private void mapView() {
@@ -77,7 +73,7 @@ public class MultiLineEditText implements IField{
 		tvEditText.setTextColor(-1);
 	}
 
-	private void defineViewSettings(Activity context) {
+	private void defineViewSettings() {
 		etEditText.setOnFocusChangeListener( new OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -113,7 +109,7 @@ public class MultiLineEditText implements IField{
 		if(tvEditText==null)return;
 		tvEditText.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
 		tvEditText.setText(tvEditText.getText() + message);
-		tvEditText.setTextColor(R.color.ErrorMessage);
+		tvEditText.setTextColor(tvEditText.getContext().getResources().getColor(R.color.ErrorMessage));
 	}
 
 	@Override
@@ -153,20 +149,10 @@ public class MultiLineEditText implements IField{
 	}
 
 	public boolean validateDisplay(String value,String condition) {
-		if(condition.equals("equals")){
-			if(mtext.toLowerCase().equals(value.toLowerCase()) || mtext.equals("")){
-				return true;
-			}
-			return false;
-		}
-		return true;
+		return !condition.equals("equals") || mtext.toLowerCase().equals(value.toLowerCase()) || mtext.equals("");
 	}
 
-    public boolean isHidden(){
-        if(llEditText!=null) {
-            return !llEditText.isShown();
-        } else {
-            return false;
-        }
-    }
+    public boolean isHidden() {
+		return llEditText != null && !llEditText.isShown();
+	}
 }

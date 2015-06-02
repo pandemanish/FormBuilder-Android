@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 
 public class FormJson {
-	ArrayList<FieldConfig> fields = new ArrayList<FieldConfig>();
+	ArrayList<FieldConfig> fields = new ArrayList<>();
 
 	public ArrayList<FieldConfig> getFields() {
 		return fields;

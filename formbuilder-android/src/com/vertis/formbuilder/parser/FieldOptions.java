@@ -1,7 +1,6 @@
 package com.vertis.formbuilder.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class FieldOptions {
 	public int getSteps() {
@@ -42,7 +41,7 @@ public class FieldOptions {
 		this.maxDate = "";
 		this.existingFieldValue = "";
 	}
-	ArrayList<AllOptions> options = new ArrayList<AllOptions>();
+	ArrayList<AllOptions> options = new ArrayList<>();
 	int steps;
 	String date_format, maxDate, existingFieldValue;
 	

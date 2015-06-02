@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class CaptureContentAdapter extends ArrayAdapter<String>  {
@@ -21,7 +20,6 @@ public class CaptureContentAdapter extends ArrayAdapter<String>  {
 
 	private ArrayList<String> capturedObject;
 	private Context context;
-	private Button cross;
 	private Capture c;
 
 	public CaptureContentAdapter(Context context, int resource, ArrayList<String>  objects, Capture c) {
@@ -39,7 +37,7 @@ public class CaptureContentAdapter extends ArrayAdapter<String>  {
 		}
 		TextView tv = (TextView)return_view.findViewById(R.id.tvCapturedFile);
 		tv.setText(this.capturedObject.get(position));
-		cross= (Button)return_view.findViewById(R.id.crossImage);
+		Button cross= (Button)return_view.findViewById(R.id.crossImage);
 		cross.setTag(position);
 		cross.setOnClickListener(new OnClickListener (){
 			@Override

@@ -1,7 +1,6 @@
 package com.vertis.formbuilder.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class FieldConfig {
 	public String getLabel() {
@@ -61,10 +60,10 @@ public class FieldConfig {
     String label;
 	String field_type;
 	Boolean required;
-	ArrayList<AllOptions> options = new ArrayList<AllOptions>();
+	ArrayList<AllOptions> options = new ArrayList<>();
 	FieldOptions field_options = new FieldOptions();
-	ArrayList<Conditions> conditions= new ArrayList<Conditions>();
-	//ArrayList<HashMap<String,String>> conditions = new ArrayList<HashMap<String,String>>();
+	ArrayList<Conditions> conditions= new ArrayList<>();
+	//ArrayList<HashMap<String,String>> conditions = new ArrayList<>();
 	String cid;
 	int section_id=0;
 }

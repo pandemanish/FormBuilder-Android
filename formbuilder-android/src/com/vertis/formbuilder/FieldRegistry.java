@@ -2,12 +2,10 @@ package com.vertis.formbuilder;
 
 import java.util.HashMap;
 
-import android.util.Config;
-
 public class FieldRegistry {
 
 	@SuppressWarnings("rawtypes")
-	static HashMap<String,Class> fields=new HashMap<String,Class>();
+	static HashMap<String,Class> fields=new HashMap<>();
 	
 	static{
 		fields.put("fullnamexml", FullNameXml.class);

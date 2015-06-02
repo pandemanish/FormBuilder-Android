@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.annotations.Expose;
+import com.vertis.formbuilder.Listeners.CustomTextChangeListener;
 import com.vertis.formbuilder.parser.FieldConfig;
 import com.vertis.formbuilder.util.FormBuilderUtil;
 
@@ -29,7 +30,6 @@ public class NumberField implements IField{
 	String cid;
 	@Expose
 	String number="";
-	private Typeface font;
 
 	public NumberField(FieldConfig fcg){
 		this.config=fcg;
@@ -38,8 +38,8 @@ public class NumberField implements IField{
 	@SuppressLint("ResourceAsColor")
 	@Override
 	public void createForm(Activity context) {
-		font = new FormBuilderUtil().getFontFromRes(context);
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		Typeface font = new FormBuilderUtil().getFontFromRes(context);
+		LayoutInflater inflater = context.getLayoutInflater();
 		llNumber=(LinearLayout) inflater.inflate(R.layout.number_edit_text,null);
 		tvNumber = (TextView) llNumber.findViewById(R.id.numberTextView);
 		etNumber = (EditText) llNumber.findViewById(R.id.numberEditText);
@@ -47,10 +47,8 @@ public class NumberField implements IField{
 		tvNumber.setTypeface(font);
 		etNumber.setTextSize(TypedValue.COMPLEX_UNIT_SP,(float) 12.5);
 		tvNumber.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-		tvNumber.setTextColor(R.color.TextViewNormal);
 		etNumber.addTextChangedListener(new CustomTextChangeListener(config));
-
-		defineViewSettings(context);
+		defineViewSettings();
 		setViewValues();
 		mapView();
 		setValues();
@@ -61,7 +59,7 @@ public class NumberField implements IField{
 	private void noErrorMessage() {
 		if(tvNumber==null)return;
 		tvNumber.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
-		tvNumber.setTextColor(R.color.TextViewNormal);
+		tvNumber.setTextColor(tvNumber.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	private void mapView() {
@@ -75,7 +73,7 @@ public class NumberField implements IField{
 		tvNumber.setTextColor(-1);
 	}
 
-	private void defineViewSettings(Activity context) {
+	private void defineViewSettings() {
 		etNumber.setOnFocusChangeListener( new OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -111,7 +109,7 @@ public class NumberField implements IField{
 		if(tvNumber==null)return;
 		tvNumber.setText(this.config.getLabel() + (this.config.getRequired()?"*":"") );
 		tvNumber.setText(tvNumber.getText() + message);
-		tvNumber.setTextColor(R.color.ErrorMessage);
+		tvNumber.setTextColor(tvNumber.getContext().getResources().getColor(R.color.ErrorMessage));
 	}
 
 	@Override
@@ -154,27 +152,27 @@ public class NumberField implements IField{
 
 	@Override
 	public boolean validateDisplay(String value,String condition) {
-		if(condition.equals("equals")){
-			if(number.equals(value) || number.equals("")){
-				return true;
-			}
-		} else if(condition.equals("is greater than")){
-			if(Integer.parseInt(number) > Integer.parseInt(value) || number.equals("")){
-				return true;
-			}
-		} else if(condition.equals("is less than")){
-			if(Integer.parseInt(number) < Integer.parseInt(value) || number.equals("")){
-				return true;
-			}
+		switch (condition) {
+			case "equals":
+				if (number.equals(value) || number.equals("")) {
+					return true;
+				}
+				break;
+			case "is greater than":
+				if (Integer.parseInt(number) > Integer.parseInt(value) || number.equals("")) {
+					return true;
+				}
+				break;
+			case "is less than":
+				if (Integer.parseInt(number) < Integer.parseInt(value) || number.equals("")) {
+					return true;
+				}
+				break;
 		}
 		return false;
 	}
 
-    public boolean isHidden(){
-        if(llNumber!=null) {
-            return !llNumber.isShown();
-        } else {
-            return false;
-        }
-    }
+    public boolean isHidden() {
+		return llNumber != null && !llNumber.isShown();
+	}
 }

@@ -31,13 +31,13 @@ public interface IField {
 	 *Convention: String id associated with layout is same as id in default values. Id of other views are id_of_parent + "_i", where i is a number
 	 * 
 	 */
-	public abstract void createForm(Activity context);
+	void createForm(Activity context);
 
 	/**
 	 * getView
 	 * return layout which encloses all the views
 	 */
-	public abstract ViewGroup getView();
+	ViewGroup getView();
 
 	
 	/**
@@ -45,25 +45,25 @@ public interface IField {
 	 Check for validations. Return true if entries are valid.
 	 *You can also output a message like "This field required" in this function.
 	 */
-	public abstract boolean validate();
+	boolean validate();
 
 	
 	/**
 	 * setValues
 	 * Use data from Views to populate Values to return. 
 	 */
-	public abstract void setValues();
+	void setValues();
 	
-	public abstract void clearViews();
+	void clearViews();
 	
-	public abstract String getCIDValue();
+	String getCIDValue();
 	
-	public abstract void hideField();
+	void hideField();
 	
-	public abstract void showField();
+	void showField();
 	
-	public abstract boolean validateDisplay(String value,String condition);
+	boolean validateDisplay(String value,String condition);
 
-    public boolean isHidden();
+    boolean isHidden();
 	
 }

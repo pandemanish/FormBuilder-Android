@@ -170,21 +170,26 @@ View.OnClickListener, OnDateChangedListener, OnTimeChangedListener{
 	}
 
 	public void controlShow(String type) {
-		if (type.equals("birth_date")|| type.equals("date")) {
-			viewSwitcher.removeAllViews();
-			viewSwitcher.addView(datePickerControl, 0);
-			setButtonsVisibility(GONE);
-		} else if (type.equals("time")) { 
-			viewSwitcher.removeAllViews();
-			viewSwitcher.addView(timePickerControl, 0);
-			setButtonsVisibility(GONE);
-		} else if (type.equals("endDateTimeDifference") 
-				|| type.equals("startDateTimeDifference") 
-				|| type.equals("date_time")) {
-			viewSwitcher.removeAllViews();
-			viewSwitcher.addView(datePickerControl, 0);
-			viewSwitcher.addView(timePickerControl, 1);
-			setButtonsVisibility(VISIBLE);
+		switch (type) {
+			case "birth_date":
+			case "date":
+				viewSwitcher.removeAllViews();
+				viewSwitcher.addView(datePickerControl, 0);
+				setButtonsVisibility(GONE);
+				break;
+			case "time":
+				viewSwitcher.removeAllViews();
+				viewSwitcher.addView(timePickerControl, 0);
+				setButtonsVisibility(GONE);
+				break;
+			case "endDateTimeDifference":
+			case "startDateTimeDifference":
+			case "date_time":
+				viewSwitcher.removeAllViews();
+				viewSwitcher.addView(datePickerControl, 0);
+				viewSwitcher.addView(timePickerControl, 1);
+				setButtonsVisibility(VISIBLE);
+				break;
 		}
 	}
 

@@ -24,7 +24,7 @@ public class CountriesArrayAdapter extends ArrayAdapter<SelectElement> {
 		      LayoutInflater layoutInf = (LayoutInflater) getContext()
 		          .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		      v = layoutInf.inflate(R.layout.spinner_textview, null);
-		    }
+		}
 		TextView tv = (TextView)v.findViewById(android.R.id.text1);
 		tv.setText(this.CountryList.get(position).value);
 		return v;

@@ -33,7 +33,6 @@ public class Dropdown implements IField{
 	@Expose
 	String drop="";
 	int ddPosition=0;
-	private Typeface font;
 
 	public Dropdown(FieldConfig fcg){
 		this.config=fcg;
@@ -41,8 +40,8 @@ public class Dropdown implements IField{
 
 	@Override
 	public void createForm(Activity context) {
-		font = new FormBuilderUtil().getFontFromRes(context);
-		LayoutInflater inflater = (LayoutInflater) context.getLayoutInflater();
+		Typeface font = new FormBuilderUtil().getFontFromRes(context);
+		LayoutInflater inflater = context.getLayoutInflater();
 		llDropdown=(LinearLayout) inflater.inflate(R.layout.drop_down_xml, null);
 		tvDropdown = (TextView) llDropdown.findViewById(R.id.textViewDropdown);
 		sDropdown =(Spinner) llDropdown.findViewById(R.id.spinnerDropdown);		
@@ -60,7 +59,7 @@ public class Dropdown implements IField{
 	private void noErrorMessage() {
 		if(tvDropdown==null)return;
 		tvDropdown.setText(this.config.getLabel() + (this.config.getRequired()?"*":""));
-		tvDropdown.setTextColor(android.R.color.black);
+		tvDropdown.setTextColor(tvDropdown.getContext().getResources().getColor(R.color.TextViewNormal));
 	}
 
 	private void mapView() {
@@ -80,13 +79,13 @@ public class Dropdown implements IField{
 	}
 
 	private ArrayAdapter<SelectElement> getAdapter(Activity context) {
-		return new CountriesArrayAdapter(context, getContentList(context));
+		return new CountriesArrayAdapter(context, getContentList());
 	}
 
-	private ArrayList<SelectElement> getContentList(Activity context) {
+	private ArrayList<SelectElement> getContentList() {
 		int i=0;
-		ArrayList<SelectElement> contents=new ArrayList<SelectElement>();
-		ArrayList<String> new_contents=new ArrayList<String>();
+		ArrayList<SelectElement> contents=new ArrayList<>();
+		ArrayList<String> new_contents=new ArrayList<>();
 		for (int j = 0; j < this.config.getField_options().getOptions().size(); j++) {
 			new_contents.add(this.config.getField_options().getOptions().get(j).getLabel());
 		}
@@ -103,12 +102,12 @@ public class Dropdown implements IField{
 
 	@Override
 	public boolean validate() {
-		boolean valid=false;
+		boolean valid ;
 		if(config.getRequired()&&drop.equals("")) {
-			valid=false;
+			valid = false;
 			errorMessage("  Pick one!");
 		} else{
-			valid=true;
+			valid = true;
 			noErrorMessage();
 		}
 		return valid;
@@ -118,7 +117,7 @@ public class Dropdown implements IField{
 		if(tvDropdown==null)return;
 		tvDropdown.setText((this.config.getRequired()?"*":""));
 		tvDropdown.setText(tvDropdown.getText() + message);
-		tvDropdown.setTextColor(-65536);
+		tvDropdown.setTextColor(tvDropdown.getContext().getResources().getColor(R.color.Red));
 	}
 
 	@Override
@@ -158,20 +157,10 @@ public class Dropdown implements IField{
 	}
 
 	public boolean validateDisplay(String value,String condition) {
-		if(condition.equals("equals")){
-			if(drop.toLowerCase().equals(value.toLowerCase()) || drop.equals("")){
-				return true;
-			}
-			return false;
-		}
-		return true;
+		return !condition.equals("equals") || drop.toLowerCase().equals(value.toLowerCase()) || drop.equals("");
 	}
 
-    public boolean isHidden(){
-        if(llDropdown!=null) {
-            return !llDropdown.isShown();
-        } else {
-            return false;
-        }
-    }
+    public boolean isHidden() {
+		return llDropdown != null && !llDropdown.isShown();
+	}
 }
